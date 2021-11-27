@@ -6,8 +6,8 @@
     >
     <el-container>
       <el-aside width="200px">
-        <!-- :default-active="dact" -->
         <el-menu
+          :default-active="dact"
           class="el-menu-vertical-demo"
           background-color="#545c64"
           text-color="#fff"
@@ -30,7 +30,7 @@
             <el-menu-item
               v-for="ite in item.children"
               :key="ite.id"
-              :index="'/' + item.path"
+              :index="ite.id.toString()"
               :route="{ path: '/home/' + ite.path }"
             >
               <i class="el-icon-menu"></i>
@@ -39,7 +39,10 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main>Welcome</el-main>
+      <el-main>
+        <div v-if="this.$route.path == '/home'">Welcome</div>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -68,12 +71,7 @@ export default {
     http({
       url: "menus",
     }).then((res) => {
-      console.log(res.data);
       this.menus = res.data;
-      if (res.data) {
-        this.dact = res.data[1].children[0].id;
-        this.dopen.push(res.data[0].id);
-      }
     });
   },
   components: {},
