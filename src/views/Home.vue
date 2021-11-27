@@ -6,26 +6,35 @@
     >
     <el-container>
       <el-aside width="200px">
+        <!-- :default-active="dact" -->
         <el-menu
           class="el-menu-vertical-demo"
           background-color="#545c64"
           text-color="#fff"
-          active-text-color="#ffd04b"
+          active-text-color="#409EFF"
+          :unique-opened="isopen"
+          :router="isrouter"
+          :default-openeds="dopen"
         >
           <!-- 一级菜单 -->
-          <el-submenu index="1">
+          <el-submenu
+            v-for="item in menus"
+            :key="item.id"
+            :index="item.id + ''"
+          >
             <template slot="title">
               <i class="el-icon-menu"></i>
-              <span>用户管理</span>
+              <span>{{ item.authName }}</span>
             </template>
             <!-- 二级菜单 -->
-            <el-menu-item>
+            <el-menu-item
+              v-for="ite in item.children"
+              :key="ite.id"
+              :index="'/' + item.path"
+              :route="{ path: '/home/' + ite.path }"
+            >
               <i class="el-icon-menu"></i>
-              <span>二级菜单1</span>
-            </el-menu-item>
-            <el-menu-item>
-              <i class="el-icon-menu"></i>
-              <span>二级菜单2</span>
+              <span>{{ ite.authName }}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -36,21 +45,36 @@
 </template>
 
 <script>
-// import http from "@/http";
+import http from "@/http";
 export default {
   props: {},
   data() {
-    return {};
+    return {
+      menus: [],
+      isopen: true,
+      isrouter: true,
+      dact: "",
+      dopen: [],
+    };
   },
   methods: {
     quit() {
+      // 退出删除token值
+      window.sessionStorage.removeItem("token");
       this.$router.push("/");
     },
   },
   mounted() {
-    // http({
-    //   url:''
-    // })
+    http({
+      url: "menus",
+    }).then((res) => {
+      console.log(res.data);
+      this.menus = res.data;
+      if (res.data) {
+        this.dact = res.data[1].children[0].id;
+        this.dopen.push(res.data[0].id);
+      }
+    });
   },
   components: {},
 };
@@ -82,7 +106,5 @@ export default {
 .el-main {
   background-color: #eaedf1;
   color: #333;
-  text-align: center;
-  line-height: 160px;
 }
 </style>

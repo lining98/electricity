@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import http from "@/http";
 export default {
   props: {},
   data() {
@@ -51,26 +52,32 @@ export default {
   },
   methods: {
     login_() {
-      //   const { data: res } = await this.$http.post(
-      //     "login",
-      //     this.login.loginForm
-      //   );
-
-      //   if (res.reta.status !== 200) return this.$message.error("登录失败！");
-      //  提示登录成功
-      this.$message.success("登录成功！");
-
-      // 把登录成功的token保存到sessionStorage
-      //   window.sessionStorage.setItem("token", res.data.token);
-
-      //   使用编程式导航，跳转到后台主页
-      this.$router.push("/home");
+      http({
+        url: "login",
+        method: "post",
+        data: {
+          username: this.ruleForm.username,
+          password: this.ruleForm.pwd,
+        },
+      }).then((res) => {
+        // console.log(res);
+        if (res.meta.status !== 200) {
+          this.$message.error(res.meta.msg);
+        } else {
+          this.$message.success("登录成功！");
+          // 把登录成功的token保存到sessionStorage
+          window.sessionStorage.setItem("token", res.data.token);
+          // 使用编程式导航，跳转到后台主页
+          this.$router.push("/home");
+        }
+      });
     },
     reset() {
       this.ruleForm.username = "";
       this.ruleForm.pwd = "";
     },
   },
+  mounted() {},
   components: {},
 };
 </script>

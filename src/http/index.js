@@ -2,16 +2,14 @@ import axios from "axios";
 export default function (config) {
     const myaxios = axios.create({
         baseURL: process.env.VUE_APP_BASE_URL,
-        // baseURL: '/api',
-        timeout: 1000
+        // baseURL: '/',
+        // timeout: 10000
     })
 
     // 添加请求拦截器
     myaxios.interceptors.request.use(
         function (config) {
-            if (config.url != '/login' && config.url != '/register' && sessionStorage.getItem('token')) {
-                config.headers['token'] = sessionStorage.getItem('token')
-            }
+            config.headers.Authorization = sessionStorage.getItem('token')
             return config
         },
 
