@@ -98,7 +98,7 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" >
+        <el-table-column label="操作">
           <template slot-scope="scope">
             <!-- 修改用户 -->
             <el-button
@@ -419,27 +419,29 @@ export default {
     },
     //更改权限
     handleTools(index, row) {
-      console.log(index, row);
+      // console.log(index, row);
+      // console.log(this.gives);
       this.gives.username = row.username;
       this.gives.role_name = row.role_name;
       this.gives.id = row.id;
-      this.dialogVisibles = true;  
+      this.dialogVisibles = true;
     },
     give_no() {
       this.dialogVisibles = false;
     },
     give_yes() {
       http({
-        url: `/users/${this.gives.id}`,
+        url: `/users/${this.gives.id}/role`,
         method: "put",
         data: {
-          rid:this.gives.value
+          id: this.gives.id,
+          rid: this.gives.value,
         },
       })
         .then((res) => {
-          // console.log(this.gives.value);
-          console.log(res);
-          if ((res.meta.status !== 200)) {
+          // console.log(this.gives);
+          // console.log(res);
+          if (res.meta.status !== 200) {
             return this.$message({
               message: res.meta.msg,
               type: "error",
@@ -449,7 +451,7 @@ export default {
             message: res.meta.msg,
             type: "success",
           });
-          this.axiso_s()
+          this.axiso_s();
           this.dialogVisibles = false;
         })
         .catch((res) => {
@@ -501,11 +503,11 @@ export default {
   mounted() {
     this.axiso_s();
     http({
-        url: "/roles",
-      }).then((res) => {
-        console.log(res);
-        this.give_list = res.data;
-      });
+      url: "/roles",
+    }).then((res) => {
+      // console.log(res);
+      this.give_list = res.data;
+    });
   },
 };
 </script>
