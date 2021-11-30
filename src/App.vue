@@ -32,4 +32,17 @@ a {
 input {
   outline: none;
 }
+.el-icon-success{
+  color:#67C23A;
+}
+.el-icon-error{
+  color:#F56C6C;
+}
+.el-icon-warning{
+  color:#E6A23C;
+}
+.el-breadcrumb{
+  line-height: 50px;
+  padding-bottom: 15px;
+}
 </style>

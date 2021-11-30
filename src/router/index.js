@@ -6,11 +6,11 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/login',
   },
   {
     path: '/login',
-    component: () => import('./../views/login.vue')
+    component: () => import('./../views/login.vue'),
   },
   {
     path: '/home',
@@ -22,37 +22,41 @@ const routes = [
       // },
       {
         path: 'users',
-        component: () => import('./../components/users/users.vue')
+        component: () => import('./../components/users/users.vue'),
       },
       {
         path: 'roles',
-        component: () => import('./../components/rights/roles.vue')
+        component: () => import('./../components/rights/roles.vue'),
       },
       {
         path: 'rights',
-        component: () => import('./../components/rights/rights.vue')
+        component: () => import('./../components/rights/rights.vue'),
+      },
+      {
+        path: 'addgoods',
+        component: () => import('./../components/goods/addshop.vue'),
       },
       {
         path: 'goods',
-        component: () => import('./../components/goods/goods.vue')
+        component: () => import('./../components/goods/goods.vue'),
       },
       {
         path: 'params',
-        component: () => import('./../components/goods/params.vue')
+        component: () => import('./../components/goods/params.vue'),
       },
       {
         path: 'categories',
-        component: () => import('./../components/goods/categories.vue')
+        component: () => import('./../components/goods/categories.vue'),
       },
       {
         path: 'orders',
-        component: () => import('./../components/orders/orders.vue')
+        component: () => import('./../components/orders/orders.vue'),
       },
       {
         path: 'reports',
-        component: () => import('./../components/reports/reports.vue')
+        component: () => import('./../components/reports/reports.vue'),
       },
-    ]
+    ],
   },
 ]
 
