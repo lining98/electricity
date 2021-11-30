@@ -7,6 +7,7 @@
       <el-breadcrumb-item>订单列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 订单列表 -->
+    <div class="message_list">
     <el-table :data="tableData" border style="width: 100%">
       <el-table-column prop="order_id" label="#" width="80"> </el-table-column>
       <el-table-column prop="order_number" label="订单编号" width="360">
@@ -19,7 +20,6 @@
       <el-table-column prop="is_send" label="是否发货" width="160">
       </el-table-column>
       <el-table-column prop="update_time" label="下单时间" width="280">
-        
       </el-table-column>
       <el-table-column  label="操作"> 
         <template slot-scope="scope">
@@ -38,7 +38,7 @@
             ></el-button>
             <el-button
               size="mini"
-              type="info"
+              type="warning"
               icon="el-icon-chat-dot-square"
               @click="handlesquare(scope.$index, scope.row)"
             ></el-button>
@@ -51,6 +51,7 @@
         </template>
       </el-table-column>
     </el-table>
+    </div>
   </div>
 </template>
 
