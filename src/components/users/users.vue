@@ -419,8 +419,8 @@ export default {
     },
     //更改权限
     handleTools(index, row) {
-      console.log(index, row);
-      console.log(this.gives);
+      // console.log(index, row);
+      // console.log(this.gives);
       this.gives.username = row.username;
       this.gives.role_name = row.role_name;
       this.gives.id = row.id;
@@ -439,8 +439,8 @@ export default {
         },
       })
         .then((res) => {
-          console.log(this.gives);
-          console.log(res);
+          // console.log(this.gives);
+          // console.log(res);
           if (res.meta.status !== 200) {
             return this.$message({
               message: res.meta.msg,
