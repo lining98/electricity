@@ -14,6 +14,7 @@ import http from './http'
 Vue.prototype.$http = http
 
 
+
 Vue.config.productionTip = false
 Vue.use(VueAxios, axios)
 Vue.use(elementUI)
