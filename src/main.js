@@ -10,6 +10,9 @@ import VueAxios from 'vue-axios'
 import elementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
+import http from './http'
+Vue.prototype.$http = http
+
 
 Vue.config.productionTip = false
 Vue.use(VueAxios, axios)
