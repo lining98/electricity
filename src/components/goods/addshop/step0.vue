@@ -1,20 +1,29 @@
 <template>
-  <div class="all data">
-    <el-form label-width="100px" class="demo-ruleForm" label-position="top">
-      <el-form-item
-        v-for="item in data.slice(0, 3)"
-        :key="item.label"
-        :label="item.label"
-        :props="item.value"
-        :rules="[{required: true, message: `请填写${item.label}`, trigger: 'blur'}]"
-      >
-        <el-input v-model="item.value" @input="demo(item.value)"></el-input>
+  <div class="all step0">
+    <el-form
+      :model="formData"
+      :rules="addFormRules"
+      label-width="100px"
+      class="ruleForm"
+      ref="form"
+      label-position="top"
+    >
+      <el-form-item label="商品名称" prop="goods_name">
+        <el-input v-model="formData.goods_name"></el-input>
       </el-form-item>
-
-      <el-form-item :label="data[4].label">
+      <el-form-item label="商品价格" prop="goods_price">
+        <el-input v-model="formData.goods_price"></el-input>
+      </el-form-item>
+      <el-form-item label="商品重量" prop="goods_weight">
+        <el-input v-model="formData.goods_weight"></el-input>
+      </el-form-item>
+      <el-form-item label="商品数量" prop="goods_number">
+        <el-input v-model="formData.goods_number"></el-input>
+      </el-form-item>
+      <el-form-item label="商品分类" prop="cat_id">
         <el-cascader
           placeholder="请选择"
-          v-model="data[4].value"
+          v-model="cat_id"
           :options="cateList"
           :props="{
             expandTrigger: 'hover',
@@ -22,7 +31,7 @@
             label: 'cat_name',
           }"
           clearable
-          @change="handleChange()"
+          @change="handleChange"
           getCheckedNodes
         ></el-cascader>
       </el-form-item>
@@ -33,25 +42,36 @@
 <script>
 import http from '../../../http'
 export default {
+  props: ['formData'],
   components: {},
   data() {
     return {
-      item:'',
+      item: '',
       cateList: [],
-      data: [
-        { label: '商品名称', name: 'goods_name', value: '' },
-        { label: '商品价格', name: 'goods_price', value: '' },
-        { label: '商品重量', name: 'goods_weight', value: '' },
-        { label: '商品数量', name: 'goods_number', value: '' },
-        { label: '商品分类', name: 'goods_cat', value: [] },
-      ],
+      cat_id: [],
+      addFormRules: {
+        goods_name: [
+          { required: true, message: '请填写商品名称', trigger: 'blur' },
+        ],
+        goods_price: [
+          { required: true, message: '请填写商品价格', trigger: 'blur' },
+        ],
+        goods_weight: [
+          { required: true, message: '请填写商品重量', trigger: 'blur' },
+        ],
+        goods_number: [
+          { required: true, message: '请填写商品数量', trigger: 'blur' },
+        ],
+        cat_id: [
+          { required: true, message: '请选择商品分类', trigger: 'blur' },
+        ],
+      },
     }
   },
   beforeCreate() {
     /* 获取分类类名 */
     http('/categories?type=3')
       .then((result) => {
-        console.log(result)
         this.cateList = result.data
       })
       .catch((err) => {
@@ -59,21 +79,14 @@ export default {
       })
   },
   methods: {
-    demo(a) {
-      console.log(a)
-
-      return a
+    handleChange() {
+      if (this.cat_id.length === 3) {
+        this.formData.cat_id = this.cat_id[2]
+        this.formData.id=this.cat_id.join(',')
+      }      
     },
-    handleChange(){
-      console.log(this.data[4].value);
-      
-    }
   },
 }
 </script>
 
-<style lang="scss" scoped>
-.step1 {
-  margin: 0 auto;
-}
-</style>
+<style lang="scss" scoped></style>

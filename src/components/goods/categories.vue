@@ -22,9 +22,9 @@
           :rules="[
             { required: true, message: '请输入活动名称', trigger: 'blur' },
             {
-              min: 2,
+              min: 1,
               max: 9,
-              message: '长度在 2 到 9 个字符',
+              message: '长度在 1 到 9 个字符',
               trigger: 'blur',
             },
           ]"
@@ -42,11 +42,10 @@
                 value: 'cat_id',
                 label: 'cat_name',
                 checkStrictly: true,
+                children: 'children',
               }"
-              clearable
-              change-on-select
               @change="handleChange"
-              getCheckedNodes
+              clearable
             >
             </el-cascader>
           </div>
@@ -63,7 +62,6 @@
       <el-button type="primary" @click="addCategory">添加分类</el-button>
       <!-- 表格 -->
       <el-table
-        v-if="tableData && tableData.length"
         :data="tableData"
         style="width: 100%"
         row-key="cat_id"
@@ -77,17 +75,23 @@
             {{ scope.row.sequence }}
           </template>
         </el-table-column>
-        <el-table-column prop="cat_name" label="分类名称">
+        <el-table-column
+          prop="cat_name"
+          label="分类名称"
+          :rules="[
+            { required: true, message: '请输入分类名称', trigger: 'blur' },
+          ]"
+        >
           <template slot-scope="scope" v-if="tableDataRefresh">
-            <!-- <span v-if="!scope.row.edit" v-text="scope.row.cat_name"></span> -->
             <div class="namecell">
               <el-input
                 v-if="scope.row.edit"
                 v-model="input_cat_name"
                 placeholder="请输入分类名"
-                maxlength="5"
+                maxlength="9"
                 show-word-limit
                 ref="input"
+                @keyup.enter="blur()"
                 @blur="blursubmit(scope.row)"
               ></el-input>
               <span
@@ -173,17 +177,45 @@
 <script>
 import http from '../../http'
 export default {
-  props: {},
+  data() {
+    return {
+      input_cat_name: '',
+      value: null,
+      total: 0, //总数据
+      tableData: [], //页面呈现
+      tableDataRefresh: true,
+      cateData: [],
+      parent: {
+        cat_name: [],
+        cat_pid: [],
+      }, //保存父节点信息
+      loading: true,
+      req: { type: 3, pagenum: 1, pagesize: 10 },
+      columns: [],
+      dialogVisible: false, //弹窗添加
+      add: {
+        cat_name: '',
+        cat_pid: '',
+        cat_level: '',
+      }, //添加的提交参数
+    }
+  },
   methods: {
     // /* 表格相关 */
     /* 页面加载表格渲染参数 请求*/
-
     loaddata() {
+      console.log(this.req);
+      
       http({
         url: '/categories',
         params: this.req,
       })
         .then((result) => {
+          console.log(result);
+          
+          if (result.meta.status !== 200) {
+            return this.$message.error('获取商品分类失败')
+          }
           this.total = result.data.total
           let res = result.data.result
           /* 给第一级添序号 */
@@ -213,31 +245,29 @@ export default {
     // /* 添加分类相关 */
     /* 添加分类按钮事件 */
     addCategory() {
+      this.add = {
+        cat_name: '',
+        cat_pid: '',
+        cat_level: '',
+      }
+      this.parent = {
+        cat_name: '',
+        cat_pid: '',
+      } //保存父节点信息
       this.dialogVisible = true
       /* 加载分类时级联选择器 */
       http({
         url: '/categories?type=2',
       })
         .then((result) => {
+          console.log(result.data)
           this.cateData = result.data
         })
         .catch((err) => {
           console.warn(err)
         })
     },
-    /* 重置添加相关数据 */
-    resetAdd() {
-      this.add.assign({
-        cat_name: '',
-        cat_pid: '',
-        cat_level: '',
-      })
-      this.parent = {
-        cat_name: '',
-        cat_pid: '',
-      } //保存父节点信息
-      this.dialogVisible = false //弹窗添加
-    },
+    
     /* 提交添加数据 */
     submitAdd() {
       this.$refs.add.validate((valid) => {
@@ -247,19 +277,18 @@ export default {
             method: 'post',
             data: this.add,
           })
-            .then((result) => {
+            .then(() => {
               this.$message({
                 message: '添加成功',
                 type: 'success',
               })
               this.hideDialog()
-              this.cateData = result.data
             })
             .catch((err) => {
               console.warn(err)
             })
             .finally(() => {
-              this.$router.go(0)
+              this.loaddata()
             })
         } else {
           this.$message.error('填写格式错误, 请重试')
@@ -270,19 +299,19 @@ export default {
     /* 父级级联处理 */
     handleChange() {
       // 证明没有选中任何父级分类
-      if (this.parent.cat_id.length === 0) {
+      let parentId = this.parent.cat_id
+      if (parentId.length === 0) {
         this.add.cat_pid = 0
         this.add.cat_level = 0
       } else {
         // 选中父级分类
-        this.add.cat_pid = this.parent.cat_id[this.parent.cat_id.length - 1]
+        this.add.cat_pid = parentId[parentId.length - 1]
         // 设置分类等级
-        this.add.cat_level = this.parent.cat_id.length
+        this.add.cat_level = parentId.length
       }
     },
     /* 隐藏弹窗 */
     hideDialog() {
-      this.resetAdd()
       this.dialogVisible = false
     },
     /* dialog的x按钮 */
@@ -324,22 +353,17 @@ export default {
                 message: res.meta.msg,
                 type: 'success',
               })
+              this.dialogVisible = false //弹窗添加
+              this.loaddata()
             } else {
               this.$message({
                 message: res.meta.msg,
                 type: 'error',
               })
             }
-            delete tcell.edit
-            this.tableDataRefresh = false
-            this.tableDataRefresh = true
-            return
           })
-          .catch(() => {
-            delete tcell.edit
-            this.tableDataRefresh = false
-            this.tableDataRefresh = true
-            return
+          .catch((err) => {
+            console.warn(err)
           })
       } else {
         this.$message({
@@ -351,10 +375,6 @@ export default {
               : '分类名称未修改',
           type: 'warning',
         })
-        delete tcell.edit
-        this.tableDataRefresh = false
-        this.tableDataRefresh = true
-        return
       }
     },
     /* 删除 */
@@ -375,36 +395,14 @@ export default {
           console.warn(err)
         })
         .finally(() => {
-          this.$router.go(0)
+          this.loaddata()
         })
     },
   },
   created() {
     this.loaddata()
   },
-  data() {
-    return {
-      input_cat_name: '',
-      value: null,
-      total: 0, //总数据
-      tableData: [], //页面呈现
-      tableDataRefresh: true,
-      cateData: [],
-      parent: {
-        cat_name: [],
-        cat_pid: [],
-      }, //保存父节点信息
-      loading: true,
-      req: { type: 3, pagenum: 3, pagesize: 10 },
-      columns: [],
-      dialogVisible: false, //弹窗添加
-      add: {
-        cat_name: '',
-        cat_pid: '',
-        cat_level: '',
-      }, //添加的提交参数
-    }
-  },
+  
   computed: {
     editable() {
       return function () {}
@@ -423,6 +421,9 @@ export default {
   }
   .el-table {
     margin: 16px 0;
+  }
+  .el-button--mini {
+    margin-right: 20px;
   }
 }
 </style>

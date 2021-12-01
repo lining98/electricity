@@ -23,78 +23,130 @@
       <el-tabs
         tab-position="left"
         v-model="activeName"
+        :currentName="activeName"
         :before-leave="beforeTabLeave"
       >
-        <el-tab-pane label="基本信息" name="0"
-          ><step0 @getdata="stepdata0"></step0
-        ></el-tab-pane>
-        <el-tab-pane label="商品参数" name="1"
-          ><step1 @getdata="stepdata1"></step1
-        ></el-tab-pane>
-        <el-tab-pane label="商品属性" name="2"
-          ><step2 @getdata="stepdata2"></step2
-        ></el-tab-pane>
-        <el-tab-pane label="商品图片" name="3"
-          ><step3 @getdata="stepdata3"></step3
-        ></el-tab-pane>
-        <el-tab-pane label="商品内容" name="4"
-          ><step4 @getdata="stepdata4"></step4
-        ></el-tab-pane>
+        <el-tab-pane label="基本信息" name="0">
+          <step0 :formData="step0"></step0>
+        </el-tab-pane>
+        <el-tab-pane label="商品参数" name="1">
+          <step1
+            :id="step0.cat_id"
+            @getstep1="getstep1"
+            :activeName="activeName"
+          ></step1>
+        </el-tab-pane>
+        <el-tab-pane label="商品属性" name="2">
+          <step2
+            :id="step0.cat_id"
+            :activeName="activeName"
+            @getstep2="getstep2"
+          ></step2>
+        </el-tab-pane>
+        <el-tab-pane label="商品图片" name="3">
+          <step3 :activeName="activeName" @getstep3="getstep3"></step3>
+        </el-tab-pane>
+        <el-tab-pane label="商品内容" name="4">
+          <step4 :addForm="addForm"></step4>
+        </el-tab-pane>
       </el-tabs>
     </div>
   </div>
 </template>
-
 <script>
-import step0 from './addshop/step0.vue'
-import step1 from './addshop/step0.vue'
-import step2 from './addshop/step2.vue'
-import step3 from './addshop/step3.vue'
-import step4 from './addshop/step4.vue'
+import step0 from './addshop/step0'
+import step1 from './addshop/step1'
+import step2 from './addshop/step2'
+import step3 from './addshop/step3'
+import step4 from './addshop/step4'
 export default {
   components: { step0, step1, step2, step3, step4 },
   data() {
     return {
-      activeName: 0,
-      addFormRules: {
-        goods_name: [
-          { required: true, message: '请填写商品名称', trigger: 'blur' },
-        ],
-        goods_price: [
-          { required: true, message: '请填写商品价格', trigger: 'blur' },
-        ],
-        goods_weight: [
-          { required: true, message: '请填写商品重量', trigger: 'blur' },
-        ],
-        goods_number: [
-          { required: true, message: '请填写商品数量', trigger: 'blur' },
-        ],
-        goods_cat: [
-          { required: true, message: '请选择商品分类', trigger: 'blur' },
-        ],
+      step0: {
+        cat_id: '',
+        goods_name: '',
+        goods_price: '',
+        goods_weight: '',
+        goods_number: '',
       },
+      step1: null,
+      step2: null,
+      step3: null,
+      addForm: null,
+      activeName: '0',
     }
   },
   methods: {
-    stepdata0(value) {
-      console.log(value)
+    beforeTabLeave(to) {
+      let bool = true
+      if (to === '2' || to === '1') {
+        if (!this.step0Finished) {
+          this.$message({
+            message: '必填项未完成',
+            type: 'error',
+          })
+          this.activeName = '0'
+          bool = false
+          this.$router.push("/home/goods")
+        }
+      } else if (to === '4') {
+        this.addForm = {
+          ...this.step0,
+          ...this.step1,
+          ...this.step3,
+          goods_introduce:'',
+        }
+        this.addForm.attrs = this.addForm.attrs.concat(this.step2.attrs)
+        console.log(this.addForm)
+      }
+      return bool
     },
-    stepdata1(value) {
-      console.log(value)
+    /* 动态属性的获取 */
+    getstep1(v) {
+      let attrs = []
+      v.forEach((item) => {
+        let { attr_id, attr_vals } = item
+        if (attr_vals.length) {
+          let attr_value = attr_vals.join(' ')
+          attrs.push({ attr_id, attr_value })
+        }
+      })
+      this.step1 = { attrs }
     },
-    stepdata2(value) {
-      console.log(value)
+    /* 静态属性的获取 */
+    getstep2(v) {
+      let attrs = []
+      v.forEach((item) => {
+        let { attr_id, attr_vals } = item
+        if (attr_vals.trim().length) {
+          let attr_value = attr_vals.trim()
+          attrs.push({ attr_id, attr_value })
+        }
+      })
+      this.step2 = { attrs }
     },
-    stepdata3(value) {
-      console.log(value)
-    },
-    stepdata4(value) {
-      console.log(value)
-    },
-    beforeTabLeave() {
-      console.log('beforeTabLeave')
+    /* 图片路径的获取 */
+    getstep3(v) {
+      console.log(v);
+      this.step3 = v
     },
   },
+  computed: {
+    step0Finished() {
+      let arr = Object.values(this.step0).filter((item) => item).length
+      return arr >=5 ? true : false
+    },
+  },
+  watch:{
+    step0:{
+      deep:true,  
+      handler(){
+        console.log(this.step0);
+      }
+      
+    }
+  }
 }
 </script>
 
@@ -102,9 +154,14 @@ export default {
 .addgood {
   margin: 0 auto;
 }
+.mainwrapper{
+  background-color: #fff;
+  padding: 20px;
+}
+.el-tabs{
+  margin: 10px 0;
+}
+.el-alert{
+  margin-bottom: 20px;
+}
 </style>
-goods_name: [{ required: true, message: '请填写商品名称', trigger: 'blur' }],
-goods_price: [{ required: true, message: '请填写商品价格', trigger: 'blur' }],
-goods_weight: [{ required: true, message: '请填写商品重量', trigger: 'blur' }],
-goods_number: [{ required: true, message: '请填写商品数量', trigger: 'blur' }],
-goods_cat: [{ required: true, message: '请选择商品分类', trigger: 'blur' }]
