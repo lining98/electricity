@@ -81,6 +81,9 @@ export default {
 <style scoped lang="scss">
 .el-container {
   height: 100%;
+  .el-main {
+    box-sizing: border-box;
+  }
 }
 .el-header {
   background-color: #373d41;
