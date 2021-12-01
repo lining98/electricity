@@ -259,7 +259,7 @@ export default {
               console.warn(err)
             })
             .finally(() => {
-              this.$router.go(0)
+              this.loaddata()
             })
         } else {
           this.$message.error('填写格式错误, 请重试')
@@ -270,14 +270,15 @@ export default {
     /* 父级级联处理 */
     handleChange() {
       // 证明没有选中任何父级分类
-      if (this.parent.cat_id.length === 0) {
+      let parentId = this.parent.cat_id
+      if (parentId.length === 0) {
         this.add.cat_pid = 0
         this.add.cat_level = 0
       } else {
         // 选中父级分类
-        this.add.cat_pid = this.parent.cat_id[this.parent.cat_id.length - 1]
+        this.add.cat_pid = parentId[parentId.length - 1]
         // 设置分类等级
-        this.add.cat_level = this.parent.cat_id.length
+        this.add.cat_level = parentId.length
       }
     },
     /* 隐藏弹窗 */
