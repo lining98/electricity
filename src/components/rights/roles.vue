@@ -21,7 +21,7 @@
                     <el-col :span="5">
                       <el-tag
                         closable
-                        @close="removeRightById(scope.row, item1.id)"
+                        @close="removeRightById(scope.row, item1.id, item1)"
                         >{{ item1.authName }}</el-tag
                       >
                       <i class="el-icon-caret-right"></i>
@@ -41,7 +41,7 @@
                           <el-tag
                             closable
                             type="success"
-                            @close="removeRightById(scope.row, item2.id)"
+                            @close="removeRightById(scope.row, item2.id, item1)"
                             >{{ item2.authName }}</el-tag
                           >
                           <i class="el-icon-caret-right"></i>
@@ -53,7 +53,7 @@
                             type="warning"
                             v-for="item3 in item2.children"
                             :key="item3.id"
-                            @close="removeRightById(scope.row, item3.id)"
+                            @close="removeRightById(scope.row, item3.id, item1)"
                           >
                             {{ item3.authName }}</el-tag
                           >
@@ -429,26 +429,22 @@ export default {
 
     // 根据ID删除权限
     removeRightById(role, rightId) {
-      // console.log(role);
-      // console.log(rightId);
-      // console.log(typeof role, typeof rightId);
+      console.log(role);
       this.$confirm("此操作将永久删除该角色，是否继续？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          // console.log(res);
           http({
             url: `roles/${role.id}/rights/${rightId}`,
             method: "delete",
           }).then((res) => {
-            // console.log(res);
             if (res.meta.status !== 200) {
               return this.$message.error("删除权限失败！");
             }
             this.$message.success("删除权限成功！");
-            this.getRoleList();
+            role.children = res.data;
           });
         })
         .catch(() => {
