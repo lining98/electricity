@@ -483,15 +483,33 @@ export default {
         this.total = res.data.total;
       });
     },
+    // 搜索用户的功能,根据用户名查询
+    // getUserList() {
+    //   http({
+    //     url: `/users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`,
+    //   }).then((res) => {
+    //     console.log(res);
+    //     this.tableData = res.data.users;
+    //     // this.tableData = this.tableData.filter((item) => {
+    //     //   if (item.id === res.data.id || item.username === res.data.username) {
+    //     //     console.log(res.data.username);
+    //     //     return item;
+    //     //   }
+    //     // });
+    //   });
+    // },
     // 搜索用户的功能,根据id查询
     getUserList() {
+      if(this.query === ''){
+        this.axiso_s()
+      }
       http({
-        url: `/users/${this.query}`,
+        url:`/users/${this.query}`,
       }).then((res) => {
-        // console.log(res);
         this.tableData = this.tableData.filter((item) => {
           if (item.id === res.data.id) {
             return item;
+
           }
         });
       });
