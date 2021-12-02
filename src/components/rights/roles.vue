@@ -7,7 +7,7 @@
         >添加角色</el-button
       >
       <el-table :data="rolesList" style="width: 100%" border stripe>
-        <el-table-column type="expand">
+        <el-table-column type="expand" >
           <template slot-scope="scope">
             <div class="scope">
               <div class="hide">
@@ -102,7 +102,7 @@
           show-checkbox
           node-key="id"
           default-expand-all
-          :default-checked-keys="defaultCheckedKeys"
+          :default-checked-keys="defKeys"
         ></el-tree>
         <span slot="footer" class="dialog-footer">
           <el-button @click="setRightHide">取 消</el-button>
@@ -141,6 +141,7 @@
         :visible.sync="addDialog"
         width="30%"
         @close="addDialogClosed"
+        
       >
         <el-form
           :model="addForm"
@@ -372,8 +373,9 @@ export default {
           this.getLeafIds(item, keys);
         });
       }
+      
       // this.getLeafIds(node, keys);
-      this.defaultCheckedKeys = keys;
+      // this.defaultCheckedKeys = keys;
     },
 
     // 修改用户权限   展示树状图  修改用户权限
@@ -387,7 +389,9 @@ export default {
           return this.$message.error("初始化权限失败");
         } else {
           this.rightTree = res.data;
+          this.defKeys=[]
           this.getLeafIds(role, this.defKeys);
+          // this.defaultCheckedKeys=this.defKeys
           this.setRight = true;
           this.roleId = role.id;
         }
@@ -403,7 +407,6 @@ export default {
 
       const idStr = [...arr1, ...arr2].join(",");
       console.log(idStr, typeof idStr);
-      // console.log(this.defKeys);
       http({
         url: `roles/${this.roleId}/rights`,
         method: "post",
