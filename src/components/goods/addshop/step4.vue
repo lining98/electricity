@@ -36,7 +36,7 @@ export default {
             message: flag ? res.meta.msg : '已存在该名字的商品',
             type: flag ? 'success' : 'error',
           })
-          this.$nextTick(this.$router.push('/home/goods'))
+          this.$router.push('/home/goods')
         })
         .catch((err) => {
           console.warn(err)

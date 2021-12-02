@@ -115,7 +115,6 @@
 <script>
 import http from '../../http'
 export default {
-  props: {},
   data() {
     return {
       //编辑框是否显示
@@ -156,7 +155,7 @@ export default {
   },
   methods: {
     /* 加载数据 及查询*/
-    loaddata() {
+    loaddata() {  
       http({
         url: '/goods',
         params: this.req,
@@ -239,7 +238,9 @@ export default {
         })
     },
     /* 编辑关闭按钮 */
-    editClose() {},
+    editClose() {
+      this.editDialogVisible = false
+    },
     /* 编辑提交按钮 */
     editSubmit() {
       this.$refs.editForm.validate((valid) => {
@@ -265,7 +266,8 @@ export default {
                 type: 'error',
               })
             }
-            this.editDialogVisible=false
+            this.editDialogVisible = false
+            this.loaddata()
           })
           .catch((err) => {
             console.warn(err)
@@ -274,7 +276,7 @@ export default {
     },
   },
   components: {},
-  created() {
+  mounted() {
     this.loaddata()
   },
 }

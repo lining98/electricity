@@ -13,7 +13,10 @@
         :key="item.attr_id"
       >
         <!--复选框组-->
-        <el-checkbox-group v-if="item.attr_vals" v-model="item.attr_vals">
+        <el-checkbox-group
+          v-if="Array.isArray(item.attr_vals)"
+          v-model="item.attr_vals"
+        >
           <el-checkbox
             v-for="(cb, i) in item.attr_vals"
             :label="cb"
@@ -51,7 +54,9 @@ export default {
             console.log(result)
             result.data.forEach((item) => {
               item.attr_vals =
-                item.attr_vals.trim().length === 0 ? [] : item.attr_vals.trim().split(/\s+/)
+                item.attr_vals.trim().length === 0
+                  ? []
+                  : item.attr_vals.trim().split(/\s+/)
             })
             this.manyData = result.data
           })
