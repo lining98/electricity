@@ -56,7 +56,6 @@
         <el-button type="primary" @click="submitAdd"> 确 定 </el-button>
       </div>
     </el-dialog>
-
     <div class="mainwrapper">
       <!-- 添加分类按钮 -->
       <el-button type="primary" @click="addCategory">添加分类</el-button>
@@ -204,14 +203,12 @@ export default {
     // /* 表格相关 */
     /* 页面加载表格渲染参数 请求*/
     loaddata() {
-      console.log(this.req);
-
       http({
         url: "/categories",
         params: this.req,
       })
         .then((result) => {
-          console.log(result);
+          console.log(result)
 
           if (result.meta.status !== 200) {
             return this.$message.error("获取商品分类失败");
@@ -421,6 +418,25 @@ export default {
   }
   .el-table {
     margin: 16px 0;
+    .el-table__expand-icon {
+      .el-icon-arrow-right {
+        border: 1px solid #c3c3c3;
+        color: #c3c3c3;
+        text-align: center;
+        &::before {
+          vertical-align: -1px;
+          content: '\e6d9';
+        }
+      }
+      &.el-table__expand-icon--expanded {
+        transform: none;
+        .el-icon-arrow-right {
+          &::before {
+            content: '\e6d8';
+          }
+        }
+      }
+    }
   }
   .el-button--mini {
     margin-right: 20px;
