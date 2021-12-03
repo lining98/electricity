@@ -25,9 +25,6 @@
         <el-form-item label="商品重量" prop="goods_weight">
           <el-input v-model="editForm.goods_weight"></el-input>
         </el-form-item>
-        <el-form-item label="商品介绍" prop="goods_introduce">
-          <el-input v-model="editForm.goods_introduce"></el-input>
-        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
@@ -118,7 +115,6 @@
 <script>
 import http from '../../http'
 export default {
-  props: {},
   data() {
     return {
       //编辑框是否显示
@@ -130,8 +126,7 @@ export default {
         goods_price: null,
         goods_number: null,
         goods_weight: null,
-        goods_introduce: '',
-        goods_cat: [],
+        goods_cat: '',
       },
       // 编辑商品的验证规则对象
       editFormRules: {
@@ -160,7 +155,7 @@ export default {
   },
   methods: {
     /* 加载数据 及查询*/
-    loaddata() {
+    loaddata() {  
       http({
         url: '/goods',
         params: this.req,
@@ -223,27 +218,29 @@ export default {
     handleEdit(shop) {
       this.editDialogVisible = true
       console.log(shop)
-      let {
-        goods_id,
-        goods_name,
-        goods_price,
-        goods_number,
-        goods_weight,
-        goods_introduce,
-        goods_cat
-      } = shop
-      this.editForm = {
-        goods_id,
-        goods_name,
-        goods_price,
-        goods_number,
-        goods_weight,
-        goods_introduce,
-        goods_cat
-      }
+      let { goods_id, goods_name, goods_price, goods_number, goods_weight } =
+        shop
+      http('/goods/' + goods_id)
+        .then((res) => {
+          console.log(res)
+          let { goods_cat } = res.data
+          this.editForm = {
+            goods_id,
+            goods_name,
+            goods_price,
+            goods_number,
+            goods_weight,
+            goods_cat,
+          }
+        })
+        .catch((err) => {
+          console.warn(err)
+        })
     },
     /* 编辑关闭按钮 */
-    editClose() {},
+    editClose() {
+      this.editDialogVisible = false
+    },
     /* 编辑提交按钮 */
     editSubmit() {
       this.$refs.editForm.validate((valid) => {
@@ -258,6 +255,19 @@ export default {
         })
           .then((res) => {
             console.log(res)
+            if (res.meta.status === 200) {
+              this.$message({
+                message: '修改成功',
+                type: 'success',
+              })
+            } else {
+              this.$message({
+                message: '修改失败, ' + res.meta.msg,
+                type: 'error',
+              })
+            }
+            this.editDialogVisible = false
+            this.loaddata()
           })
           .catch((err) => {
             console.warn(err)
@@ -266,7 +276,7 @@ export default {
     },
   },
   components: {},
-  created() {
+  mounted() {
     this.loaddata()
   },
 }

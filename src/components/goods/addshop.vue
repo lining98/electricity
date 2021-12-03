@@ -1,12 +1,15 @@
 <template>
   <div class="all addgood">
+    <!-- 面包屑 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>添加商品</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="mainwrapper">
+      <!-- 提示信息 -->
       <el-alert title="添加商品信息" type="info" center show-icon> </el-alert>
+      <!-- 步骤条 -->
       <el-steps
         :space="200"
         :active="+activeName"
@@ -20,6 +23,7 @@
         <el-step title="商品内容"></el-step>
         <el-step title="完成"></el-step>
       </el-steps>
+      <!-- 导航标签 -->
       <el-tabs
         tab-position="left"
         v-model="activeName"
@@ -88,7 +92,6 @@ export default {
           })
           this.activeName = '0'
           bool = false
-          this.$router.push("/home/goods")
         }
       } else if (to === '4') {
         this.addForm = {

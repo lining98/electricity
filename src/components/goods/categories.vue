@@ -125,7 +125,7 @@
                 "
               >
                 {{
-                  (scope.row.cat_level + 1).toLocaleString('zh-u-nu-hanidec')
+                  (scope.row.cat_level + 1).toLocaleString("zh-u-nu-hanidec")
                 }}级
               </el-tag>
             </div>
@@ -175,11 +175,11 @@
   </div>
 </template>
 <script>
-import http from '../../http'
+import http from "../../http";
 export default {
   data() {
     return {
-      input_cat_name: '',
+      input_cat_name: "",
       value: null,
       total: 0, //总数据
       tableData: [], //页面呈现
@@ -194,221 +194,221 @@ export default {
       columns: [],
       dialogVisible: false, //弹窗添加
       add: {
-        cat_name: '',
-        cat_pid: '',
-        cat_level: '',
+        cat_name: "",
+        cat_pid: "",
+        cat_level: "",
       }, //添加的提交参数
-    }
+    };
   },
   methods: {
     // /* 表格相关 */
     /* 页面加载表格渲染参数 请求*/
     loaddata() {
       console.log(this.req);
-      
+
       http({
-        url: '/categories',
+        url: "/categories",
         params: this.req,
       })
         .then((result) => {
           console.log(result);
-          
+
           if (result.meta.status !== 200) {
-            return this.$message.error('获取商品分类失败')
+            return this.$message.error("获取商品分类失败");
           }
-          this.total = result.data.total
-          let res = result.data.result
+          this.total = result.data.total;
+          let res = result.data.result;
           /* 给第一级添序号 */
-          let num = 0
+          let num = 0;
           res.forEach((item) => {
-            item.sequence = ++num + (this.req.pagenum - 1) * this.req.pagesize
-          })
+            item.sequence = ++num + (this.req.pagenum - 1) * this.req.pagesize;
+          });
           /* 表格显示数据 */
-          this.tableData = res
+          this.tableData = res;
         })
         .catch((err) => {
-          console.warn(err)
-        })
+          console.warn(err);
+        });
     },
     /* 页面切换事件 */
     handleCurrentChange(val) {
-      if (this.req.pagenum === val) return
-      this.req.pagenum = val
-      this.loaddata()
+      if (this.req.pagenum === val) return;
+      this.req.pagenum = val;
+      this.loaddata();
     },
     /* 页面数据数量改变事件 */
     handleSizeChange(val) {
-      if (this.req.pagesize === val) return
-      this.req.pagesize = val
-      this.loaddata()
+      if (this.req.pagesize === val) return;
+      this.req.pagesize = val;
+      this.loaddata();
     },
     // /* 添加分类相关 */
     /* 添加分类按钮事件 */
     addCategory() {
       this.add = {
-        cat_name: '',
-        cat_pid: '',
-        cat_level: '',
-      }
+        cat_name: "",
+        cat_pid: "",
+        cat_level: "",
+      };
       this.parent = {
-        cat_name: '',
-        cat_pid: '',
-      } //保存父节点信息
-      this.dialogVisible = true
+        cat_name: "",
+        cat_pid: "",
+      }; //保存父节点信息
+      this.dialogVisible = true;
       /* 加载分类时级联选择器 */
       http({
-        url: '/categories?type=2',
+        url: "/categories?type=2",
       })
         .then((result) => {
-          console.log(result.data)
-          this.cateData = result.data
+          console.log(result.data);
+          this.cateData = result.data;
         })
         .catch((err) => {
-          console.warn(err)
-        })
+          console.warn(err);
+        });
     },
-    
+
     /* 提交添加数据 */
     submitAdd() {
       this.$refs.add.validate((valid) => {
         if (valid) {
           http({
-            url: '/categories',
-            method: 'post',
+            url: "/categories",
+            method: "post",
             data: this.add,
           })
             .then(() => {
               this.$message({
-                message: '添加成功',
-                type: 'success',
-              })
-              this.hideDialog()
+                message: "添加成功",
+                type: "success",
+              });
+              this.hideDialog();
             })
             .catch((err) => {
-              console.warn(err)
+              console.warn(err);
             })
             .finally(() => {
-              this.loaddata()
-            })
+              this.loaddata();
+            });
         } else {
-          this.$message.error('填写格式错误, 请重试')
-          return false
+          this.$message.error("填写格式错误, 请重试");
+          return false;
         }
-      })
+      });
     },
     /* 父级级联处理 */
     handleChange() {
       // 证明没有选中任何父级分类
-      let parentId = this.parent.cat_id
+      let parentId = this.parent.cat_id;
       if (parentId.length === 0) {
-        this.add.cat_pid = 0
-        this.add.cat_level = 0
+        this.add.cat_pid = 0;
+        this.add.cat_level = 0;
       } else {
         // 选中父级分类
-        this.add.cat_pid = parentId[parentId.length - 1]
+        this.add.cat_pid = parentId[parentId.length - 1];
         // 设置分类等级
-        this.add.cat_level = parentId.length
+        this.add.cat_level = parentId.length;
       }
     },
     /* 隐藏弹窗 */
     hideDialog() {
-      this.dialogVisible = false
+      this.dialogVisible = false;
     },
     /* dialog的x按钮 */
     handleClose(done) {
-      console.log(done)
-      this.$confirm('确认关闭？').then(() => {
-        done(this.hideDialog)
-      })
+      console.log(done);
+      this.$confirm("确认关闭？").then(() => {
+        done(this.hideDialog);
+      });
     },
     // /* 编辑与删除 */
     /* 编辑 */
     handleEdit(ind, data) {
-      data.edit = true
-      this.input_cat_name = data.cat_name
-      this.tableDataRefresh = false
-      this.tableDataRefresh = true
+      data.edit = true;
+      this.input_cat_name = data.cat_name;
+      this.tableDataRefresh = false;
+      this.tableDataRefresh = true;
       this.$nextTick(() => {
-        this.$refs.input.focus()
-      })
+        this.$refs.input.focus();
+      });
     },
     /* 提交编辑 */
     blursubmit(tcell) {
-      let str = this.input_cat_name.trim()
+      let str = this.input_cat_name.trim();
       if (str.length < 9) {
         /* 验证是否通过 */
-        this.$confirm('确认提交修改？')
+        this.$confirm("确认提交修改？")
           .then(async () => {
             let res = await http({
               url: `/categories/${tcell.cat_id}`,
-              method: 'put',
+              method: "put",
               data: {
                 cat_name: str,
               },
-            })
-            console.log(res)
-            if (res.meta.msg === '更新成功') {
-              tcell.cat_name = res.data.cat_name
+            });
+            console.log(res);
+            if (res.meta.msg === "更新成功") {
+              tcell.cat_name = res.data.cat_name;
               this.$message({
                 message: res.meta.msg,
-                type: 'success',
-              })
-              this.dialogVisible = false //弹窗添加
-              this.loaddata()
+                type: "success",
+              });
+              this.dialogVisible = false; //弹窗添加
+              this.loaddata();
             } else {
               this.$message({
                 message: res.meta.msg,
-                type: 'error',
-              })
+                type: "error",
+              });
             }
           })
           .catch((err) => {
-            console.warn(err)
-          })
+            console.warn(err);
+          });
       } else {
         this.$message({
           message:
             tcell.cat_name === str
               ? str.length == 0
-                ? '分类名称不能为空'
-                : '分类名称格式不符'
-              : '分类名称未修改',
-          type: 'warning',
-        })
+                ? "分类名称不能为空"
+                : "分类名称格式不符"
+              : "分类名称未修改",
+          type: "warning",
+        });
       }
     },
     /* 删除 */
     handleDelete(data) {
       http({
         url: `/categories/${data.cat_id}`,
-        method: 'delete',
+        method: "delete",
       })
         .then((result) => {
-          console.log(result)
+          console.log(result);
           result.meta.msg.search(/成功/) &&
             this.$message({
-              message: '删除成功',
-              type: 'success',
-            })
+              message: "删除成功",
+              type: "success",
+            });
         })
         .catch((err) => {
-          console.warn(err)
+          console.warn(err);
         })
         .finally(() => {
-          this.loaddata()
-        })
+          this.loaddata();
+        });
     },
   },
   created() {
-    this.loaddata()
+    this.loaddata();
   },
-  
+
   computed: {
     editable() {
-      return function () {}
+      return function () {};
     },
   },
-}
+};
 </script>
 
 <style scoped lang="scss">

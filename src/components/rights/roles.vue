@@ -3,9 +3,9 @@
     <p class="path"><span>首页</span> &gt; 权限管理 &gt; 角色列表</p>
     <div class="wrap">
       <!-- <AddRoles></AddRoles> -->
-      <el-button class="addRole" @click="addDialogShow" type="primary"
-        >添加角色</el-button
-      >
+      <el-button class="addRole" @click="addDialogShow" type="primary">
+        添加角色
+      </el-button>
       <el-table :data="rolesList" style="width: 100%" border stripe>
         <el-table-column type="expand">
           <template slot-scope="scope">
@@ -21,7 +21,7 @@
                     <el-col :span="5">
                       <el-tag
                         closable
-                        @close="removeRightById(scope.row, item1.id)"
+                        @close="removeRightById(scope.row, item1.id, item1)"
                         >{{ item1.authName }}</el-tag
                       >
                       <i class="el-icon-caret-right"></i>
@@ -41,7 +41,7 @@
                           <el-tag
                             closable
                             type="success"
-                            @close="removeRightById(scope.row, item2.id)"
+                            @close="removeRightById(scope.row, item2.id, item1)"
                             >{{ item2.authName }}</el-tag
                           >
                           <i class="el-icon-caret-right"></i>
@@ -53,7 +53,7 @@
                             type="warning"
                             v-for="item3 in item2.children"
                             :key="item3.id"
-                            @close="removeRightById(scope.row, item3.id)"
+                            @close="removeRightById(scope.row, item3.id, item1)"
                           >
                             {{ item3.authName }}</el-tag
                           >
@@ -102,7 +102,7 @@
           show-checkbox
           node-key="id"
           default-expand-all
-          :default-checked-keys="defaultCheckedKeys"
+          :default-checked-keys="defKeys"
         ></el-tree>
         <span slot="footer" class="dialog-footer">
           <el-button @click="setRightHide">取 消</el-button>
@@ -372,8 +372,9 @@ export default {
           this.getLeafIds(item, keys);
         });
       }
+
       // this.getLeafIds(node, keys);
-      this.defaultCheckedKeys = keys;
+      // this.defaultCheckedKeys = keys;
     },
 
     // 修改用户权限   展示树状图  修改用户权限
@@ -387,7 +388,9 @@ export default {
           return this.$message.error("初始化权限失败");
         } else {
           this.rightTree = res.data;
+          this.defKeys = [];
           this.getLeafIds(role, this.defKeys);
+          // this.defaultCheckedKeys=this.defKeys
           this.setRight = true;
           this.roleId = role.id;
         }
@@ -403,7 +406,6 @@ export default {
 
       const idStr = [...arr1, ...arr2].join(",");
       console.log(idStr, typeof idStr);
-      // console.log(this.defKeys);
       http({
         url: `roles/${this.roleId}/rights`,
         method: "post",
@@ -429,26 +431,22 @@ export default {
 
     // 根据ID删除权限
     removeRightById(role, rightId) {
-      // console.log(role);
-      // console.log(rightId);
-      // console.log(typeof role, typeof rightId);
+      console.log(role);
       this.$confirm("此操作将永久删除该角色，是否继续？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          // console.log(res);
           http({
             url: `roles/${role.id}/rights/${rightId}`,
             method: "delete",
           }).then((res) => {
-            // console.log(res);
             if (res.meta.status !== 200) {
               return this.$message.error("删除权限失败！");
             }
             this.$message.success("删除权限成功！");
-            this.getRoleList();
+            role.children = res.data;
           });
         })
         .catch(() => {
