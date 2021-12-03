@@ -23,7 +23,7 @@
             icon="el-icon-search"
             @click="getUserList"
           ></el-button>
-        </el-input>       
+        </el-input>
       </div>
       <el-table :data="tableData" border style="width: 88%">
         <el-table-column prop="order_id" label="#" width="80">
@@ -34,7 +34,7 @@
         </el-table-column>
         <el-table-column prop="pay_status" label="是否付款" width="160">
           <el-tag type="danger" v-if="this.chan.pay_status == 0">未付款</el-tag>
-          <el-tag type="danger" v-else>已付款</el-tag>
+          <el-tag type="success" v-else>已付款</el-tag>
         </el-table-column>
         <el-table-column prop="is_send" label="是否发货" width="160">
         </el-table-column>
@@ -227,7 +227,7 @@
           <el-button @click="chang_food_no()">取 消</el-button>
         </span>
       </el-dialog>
-    </div>    
+    </div>
     <!-- 底部页数设置 -->
     <div class="message_page">
       <el-pagination

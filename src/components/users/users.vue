@@ -158,15 +158,15 @@
               :visible.sync="dialogVisibles"
               width="30%"
             >
-              <div>
+              <div class="jump_body">
                 <p>
-                  当前的用户：<span>{{ gives.username }}</span>
+                  <span>当前的用户：</span> <span>{{ gives.username }}</span>
                 </p>
                 <p>
-                  当前的角色：<span>{{ gives.role_name }}</span>
+                  <span>当前的角色：</span> <span>{{ gives.role_name }}</span>
                 </p>
                 <p>
-                  分配新角色:
+                  <span>分配新角色:</span>
                   <el-select v-model.number="gives.value" placeholder="请选择">
                     <el-option
                       v-for="item in give_list"
@@ -500,16 +500,15 @@ export default {
     // },
     // 搜索用户的功能,根据id查询
     getUserList() {
-      if(this.query === ''){
-        this.axiso_s()
+      if (this.query === "") {
+        this.axiso_s();
       }
       http({
-        url:`/users/${this.query}`,
+        url: `/users/${this.query}`,
       }).then((res) => {
         this.tableData = this.tableData.filter((item) => {
           if (item.id === res.data.id) {
             return item;
-
           }
         });
       });
@@ -550,5 +549,13 @@ export default {
 }
 .remove_ {
   margin: 0 30px;
+}
+.jump_body {
+  p {
+    margin-bottom: 50px;
+    span:nth-child(1) {
+      margin-right: 20px;
+    }
+  }
 }
 </style>
