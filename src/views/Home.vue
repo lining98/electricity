@@ -18,12 +18,12 @@
         >
           <!-- 一级菜单 -->
           <el-submenu
-            v-for="item in menus"
+            v-for="(item, index) in menus"
             :key="item.id"
             :index="item.id + ''"
           >
             <template slot="title">
-              <i class="el-icon-menu"></i>
+              <i :class="icon_s[index]"></i>
               <span>{{ item.authName }}</span>
             </template>
             <!-- 二级菜单 -->
@@ -58,6 +58,13 @@ export default {
       isrouter: true,
       dact: "",
       dopen: [],
+      icon_s: [
+        "el-icon-user-solid",
+        "el-icon-s-grid",
+        "el-icon-s-goods",
+        "el-icon-s-order",
+        "el-icon-s-platform",
+      ],
     };
   },
   methods: {
